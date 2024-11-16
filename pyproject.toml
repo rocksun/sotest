@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "sotest"
+version = "0.1.0"
+description = ""
+authors = ["rocksun <daijun@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+langchain-google-genai = "^1.0.7"
+langchain-community = "^0.2.6"
+faiss-cpu = "^1.8.0.post1"
+streamlit = "^1.36.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
