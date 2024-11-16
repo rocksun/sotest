@@ -5,32 +5,79 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import google.generativeai as genai
 # from langchain.vectorstores import FAISS
 from langchain_community.vectorstores import FAISS
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.chains.question_answering import load_qa_chain
-from langchain.prompts import PromptTemplate
+from llama_index.llms.gemini import Gemini
 
 
+# def get_conversational_chain():
 
-def get_conversational_chain():
+#     prompt_template = """
+#     Answer the question as detailed as possible from the provided context with Chinese, 
+#     make sure to provide all the details, if the answer is not in
+#     provided context just say, "answer is not available in the context", 
+#     don't provide the wrong answer.\n\n
+#     Context:\n {context}?\n
+#     Question: \n{question}\n
+
+#     Answer:
+#     """
+
+#     model = ChatGoogleGenerativeAI(model="models/gemini-1.5-flash",
+#                              temperature=0.1)
+
+#     prompt = PromptTemplate(template = prompt_template, input_variables = ["context", "question"])
+#     chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
+
+#     return chain
+
+
+def call_gemini(docs, user_question):
+    safety_settings = [
+        {
+            "category": "HARM_CATEGORY_HARASSMENT",
+            "threshold": "BLOCK_NONE"
+        },
+        {
+            "category": "HARM_CATEGORY_HATE_SPEECH",
+            "threshold": "BLOCK_NONE"
+        },
+        {
+            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            "threshold": "BLOCK_NONE"
+        },
+        {
+            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "threshold": "BLOCK_NONE"
+        },
+    ]
 
     prompt_template = """
     Answer the question as detailed as possible from the provided context with Chinese, 
     make sure to provide all the details, if the answer is not in
     provided context just say, "answer is not available in the context", 
     don't provide the wrong answer.\n\n
-    Context:\n {context}?\n
-    Question: \n{question}\n
-
+    Context:\n\n{context}?\n
+    Question: \n\n{question}\n
     Answer:
     """
 
-    model = ChatGoogleGenerativeAI(model="models/gemini-1.5-flash",
-                             temperature=0.1)
+    context = ""
+    for doc in docs:
+        context += doc.metadata["source"] + "\n\n"
 
-    prompt = PromptTemplate(template = prompt_template, input_variables = ["context", "question"])
-    chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
+    prompt = prompt_template.format(context=context, question=user_question)
 
-    return chain
+    print(prompt)
+
+    text = Gemini(model="models/gemini-1.5-flash", max_tokens=16192, safety_settings=safety_settings).complete(prompt).text
+    return text
+
+
+
+def docs_to_text(docs):
+    text = ""
+    for doc in docs:
+        text += doc.metadata["source"] + "\n\n"
+    return text
 
 def user_input(user_question, new_db: FAISS):
 
@@ -44,16 +91,23 @@ def user_input(user_question, new_db: FAISS):
     
     docs = new_db.similarity_search(user_question, k=2, fetch_k=4)
     print("matched:\n")
-    print(docs)
+    # print(docs)
 
-    chain = get_conversational_chain()
+    # chain = get_conversational_chain()
 
-    response = chain(
-        {"input_documents":docs, "question": user_question}
-        , return_only_outputs=True)
+    # response = chain(
+    #     {"input_documents":docs, "question": user_question}
+    #     , return_only_outputs=True)
 
-    print(response)
-    st.write("Reply: ", response["output_text"])
+    # print(response)
+
+    # res = call_gemini(docs, user_question)
+    # st.write("Reply: ", response["output_text"])
+    # st.write("Reply: ", res)
+
+    out = docs_to_text(docs)
+    print(out)
+    st.write("Reply: ", out)
 
 
 def main(dir):

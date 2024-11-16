@@ -11,6 +11,8 @@ langchain-google-genai = "^1.0.7"
 langchain-community = "^0.2.6"
 faiss-cpu = "^1.8.0.post1"
 streamlit = "^1.36.0"
+llama-index-llms-gemini = "^0.1.4"
+llama-index = "^0.10.15"
 
 
 [build-system]

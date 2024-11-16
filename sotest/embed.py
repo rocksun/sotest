@@ -23,7 +23,7 @@ def get_paragraphs(text):
     
     for line in lines:
         if line.strip():  # Non-empty line
-            current_paragraph.append(line)
+            current_paragraph.append("\n"+line)
             empty_line_count = 0
         else:  # Empty line
             empty_line_count += 1
