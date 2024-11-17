@@ -89,7 +89,7 @@ def user_input(user_question, new_db: FAISS):
     
     # new_db = FAISS.load_local("faiss_index", embeddings)
     
-    docs = new_db.similarity_search(user_question, k=2, fetch_k=4)
+    docs = new_db.similarity_search(user_question, k=2, fetch_k=50)
     print("matched:\n")
     # print(docs)
 
@@ -113,7 +113,7 @@ def user_input(user_question, new_db: FAISS):
 def main(dir):
     db_path = os.path.join(dir,  "db")
     print(f"using db {db_path}")
-    embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
+    embeddings = GoogleGenerativeAIEmbeddings(model = "models/text-embedding-004")
     new_db = FAISS.load_local(db_path, embeddings, allow_dangerous_deserialization=True)
 
     st.set_page_config("Chat PDF")

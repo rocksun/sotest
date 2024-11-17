@@ -15,8 +15,8 @@ def store_all_text_file(dir):
     docs = embed.remove_duplicated_chunks(chunks)
 
     print(f"save chunks to {db_path}")
-    for doc in docs:
-        print(docs)
+    # for doc in docs:
+    #     print(docs)
     # print(chunks)
     embed.save_qa_chunks_to_vector_store(docs, db_path)
 

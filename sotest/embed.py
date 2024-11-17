@@ -43,6 +43,7 @@ def get_qa_chunks_from_file(file_path):
         text = f.read()
         # 通过3个或更多的空行分隔文本
         text_chunks = get_paragraphs(text)
+        print(len(text_chunks))
         # text_chunks = get_text_chunks(text)
         return text_chunks
 
@@ -51,14 +52,18 @@ def remove_duplicated_chunks(text_chunks):
     documents = []
     for chunk in text_chunks:
         chunk = chunk.strip()
+
+
+
         title_line = chunk.split("\n")[0].strip()
         # extract title that after first . or 、
 
-        print(title_line)
+        # print("`"+chunk+"`")
         title =  re.split('[.、]', title_line, maxsplit=1)[1].strip()
 
         if title not in unique_titles:
             unique_titles.append(title)
+            print("`"+title+"`")
             documents.append(Document(
                 page_content=title,
                 metadata={"source": chunk},
@@ -68,7 +73,7 @@ def remove_duplicated_chunks(text_chunks):
     return documents
 
 def save_qa_chunks_to_vector_store(documents, store_path):
-    embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
+    embeddings = GoogleGenerativeAIEmbeddings(model = "models/text-embedding-004")
     # vector_store = FAISS.from_texts(text_chunks, embeddings)
-    vector_store = FAISS.from_documents(documents, embeddings);
+    vector_store = FAISS.from_documents(documents, embeddings)
     vector_store.save_local(store_path)
